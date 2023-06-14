@@ -55,32 +55,54 @@ void print_log(GLuint object) {
 }
 
 
-
 /* Compile the shader from file 'filename', with error handling */
 GLuint create_shader(const char* filename, GLenum type) {
 	const GLchar* source = file_read(filename);
 	if (source == NULL) {
-		cerr << "Error opening " << filename << ": " << SDL_GetError() << endl;
+		SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR,
+					   "Error opening %s: %s", filename, SDL_GetError());
 		return 0;
 	}
 	GLuint res = glCreateShader(type);
 
+	// GLSL version
+	const char* version;
+	int profile;
+	SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &profile);
+	if (profile == SDL_GL_CONTEXT_PROFILE_ES)
+		version = "#version 100\n";  // OpenGL ES 2.0
+	else
+		version = "#version 120\n";  // OpenGL 2.1
+
+	// GLES2 precision specifiers
+	const char* precision;
+	precision =
+		"#ifdef GL_ES                        \n"
+		"#  ifdef GL_FRAGMENT_PRECISION_HIGH \n"
+		"     precision highp float;         \n"
+		"#  else                             \n"
+		"     precision mediump float;       \n"
+		"#  endif                            \n"
+		"#else                               \n"
+		// Ignore unsupported precision specifiers
+		"#  define lowp                      \n"
+		"#  define mediump                   \n"
+		"#  define highp                     \n"
+		"#endif                              \n";
+
 	const GLchar* sources[] = {
-#ifdef GL_ES_VERSION_2_0
-		"#version 100\n"  // OpenGL ES 2.0
-#else
-		"#version 120\n"  // OpenGL 2.1
-#endif
-	,
-	source };
-	glShaderSource(res, 2, sources, NULL);
+		version,
+		precision,
+		source
+	};
+	glShaderSource(res, 3, sources, NULL);
 	free((void*)source);
 	
 	glCompileShader(res);
 	GLint compile_ok = GL_FALSE;
 	glGetShaderiv(res, GL_COMPILE_STATUS, &compile_ok);
 	if (compile_ok == GL_FALSE) {
-		cerr << filename << ":";
+		SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "%s:\n", filename);
 		print_log(res);
 		glDeleteShader(res);
 		return 0;
