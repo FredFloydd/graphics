@@ -86,8 +86,8 @@ bool init_resources() {
 	GLint link_ok = GL_FALSE;
 	
 	GLuint vs, fs;
-	if ((vs = create_shader("cube.v.glsl", GL_VERTEX_SHADER))   == 0) return false;
-	if ((fs = create_shader("cube.f.glsl", GL_FRAGMENT_SHADER)) == 0) return false;
+	if ((vs = create_shader("suzanne.v.glsl", GL_VERTEX_SHADER))   == 0) return false;
+	if ((fs = create_shader("suzanne.f.glsl", GL_FRAGMENT_SHADER)) == 0) return false;
 	
 	program = glCreateProgram();
 	glAttachShader(program, vs);
@@ -209,7 +209,7 @@ void mainLoop(SDL_Window* window) {
 
 int main(int argc, char* argv[]) {
 	SDL_Init(SDL_INIT_VIDEO);
-	SDL_Window* window = SDL_CreateWindow("My Textured Cube",
+	SDL_Window* window = SDL_CreateWindow("My .obj Render",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		screen_width, screen_height,
 		SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
