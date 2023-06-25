@@ -1,5 +1,5 @@
 # Project name
-NAME=       window
+NAME=       shaders
 
 # Include directory
 INC_DIR=    ../../include/
@@ -10,12 +10,12 @@ CXX=	g++
 # Source files
 SRC_DIR=    # in case your cpp files are in a folder like src/
 
-SRC_FILES=  window.cpp      \
+SRC_FILES=  shaders.cpp \
 	    ../glad.c \
 
 # Obj files
 OBJ=	$($(addprefix $(SRC_DIR), $(SRC_FILES)):.c=.o)
-OBJ= window.o ../glad.o
+OBJ= shaders.o ../glad.o
 # that rule is composed of two steps
 #  addprefix, which add the content of SRC_DIR in front of every
 #  word of SRC_FILES
